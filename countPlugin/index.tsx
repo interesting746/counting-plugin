@@ -61,7 +61,6 @@ const settings = definePluginSettings({
     }
 });
 
-// TODO: change name to avoid confusion ( discord's message store is also called MessageStore )
 const allowedMessages = new Map();
 
 export default definePlugin({
@@ -365,10 +364,6 @@ function getStatus(messageId: string): string {
 
 }
 
-// TODO: potentially separate the get backwards part and the status part, combine the status part with getStatus?
-//       that way you can use and see the get backwards or other selected method
-//       in the config to compare with the last "correct" value
-// TODO: account for if the first value is incorrect/invalid
 function backwardsGetStatus(messageId: string): string {
 
     const messages = getMessages();
@@ -494,13 +489,22 @@ function parseNumber(input: string): number | null {
 
 }
 
-// TODO: add multi channel support
 function isTargetChannel(id: string): boolean {
 
     // get channel id with Vencord.Webpack.Common.SelectedChannelStore.getChannelId(); as needed
-    const target = settings.store.targetChannel;
-    if (!target) return false;
-    return id === target;
+    const targets = settings.store.targetChannel;
+
+    if (targets == null) return false;
+
+    const values = targets.split(",");
+
+    for (let i = 0; i < values.length; i++) {
+
+        if (values[i].toString().trim() === id) return true;
+
+    }
+
+    return false;
 
 }
 
